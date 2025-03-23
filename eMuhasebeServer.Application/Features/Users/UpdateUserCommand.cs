@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using eMuhasebeServer.Domain.Entities;
+using eMuhasebeServer.Domain.Events;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -12,10 +13,11 @@ public sealed record UpdateUserCommand(
     string LastName,
     string UserName,
     string Email,
-    string Password) : IRequest<Result<string>>;
+    string? Password) : IRequest<Result<string>>;
 
 
 internal sealed class UpdateUsercommandHandler(
+    IMediator mediator,
     UserManager<AppUser> userManager,
     IMapper mapper) : IRequestHandler<UpdateUserCommand, Result<string>>
 {
@@ -50,7 +52,7 @@ internal sealed class UpdateUsercommandHandler(
             isMailChanged = true;
             appUser.EmailConfirmed = false;
         }
-        
+
         mapper.Map(request, appUser);
 
         IdentityResult identityResult = await userManager.UpdateAsync(appUser);
@@ -60,17 +62,20 @@ internal sealed class UpdateUsercommandHandler(
             return Result<string>.Failure(identityResult.Errors.Select(s => s.Description).ToList());
         }
 
-        string token = await userManager.GeneratePasswordResetTokenAsync(appUser);
-
-        identityResult = await userManager.ResetPasswordAsync(appUser, token, request.Password);
-
-        if (!identityResult.Succeeded)
+        if (request.Password is not null)
         {
-            return Result<string>.Failure(identityResult.Errors.Select(s => s.Description).ToList());
+            string token = await userManager.GeneratePasswordResetTokenAsync(appUser);
+
+            identityResult = await userManager.ResetPasswordAsync(appUser, token, request.Password);
+
+            if (!identityResult.Succeeded)
+            {
+                return Result<string>.Failure(identityResult.Errors.Select(s => s.Description).ToList());
+            }
         }
         if (isMailChanged)
         {
-            //Tekrardan onay maili;
+            await mediator.Publish(new AppUserEvent(appUser.Id));
         }
 
         return "Kullanıcı başarıyla güncellendi";

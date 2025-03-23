@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using eMuhasebeServer.Domain.Entities;
+using eMuhasebeServer.Domain.Events;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -14,27 +15,24 @@ public sealed record CreateUserCommand(
     string Password) : IRequest<Result<string>>;
 
 internal sealed class CreateUserCommandHandler(
+    IMediator mediator,
     UserManager<AppUser> userManager,
     IMapper mapper) : IRequestHandler<CreateUserCommand, Result<string>>
 {
     public async Task<Result<string>> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
-        var existingUser = await userManager.Users
-            .Where(p => p.UserName == request.UserName || p.Email == request.Email)
-            .Select(p => new { p.UserName, p.Email })
-            .FirstOrDefaultAsync(cancellationToken);
+        bool isUserNameExists = await userManager.Users.AnyAsync(p => p.UserName == request.UserName, cancellationToken);
 
-        if (existingUser is not null)
+        if (isUserNameExists)
         {
-            var errors = new List<string>();
+            return Result<string>.Failure("Bu kullanıcı adı daha önce kullanılmış");
+        }
 
-            if (existingUser.UserName == request.UserName)
-                errors.Add("Bu kullanıcı adı daha önce kayıt edilmiştir.");
+        bool isEmailExists = await userManager.Users.AnyAsync(p => p.Email == request.Email, cancellationToken);
 
-            if (existingUser.Email == request.Email)
-                errors.Add("Bu Email daha önce kayıt edilmiştir.");
-
-            return Result<string>.Failure(string.Join(" ", errors));
+        if (isEmailExists)
+        {
+            return Result<string>.Failure("Bu mail adresi daha önce kullanılmış");
         }
 
         AppUser appUser = mapper.Map<AppUser>(request);
@@ -46,7 +44,7 @@ internal sealed class CreateUserCommandHandler(
             return Result<string>.Failure(identityResult.Errors.Select(s => s.Description).ToList());
         }
 
-        //Todo : onay maili gönderme
+        await mediator.Publish(new AppUserEvent(appUser.Id));
 
         return "Kullanıcı kaydı başarıyla tamamlandı";
     }
