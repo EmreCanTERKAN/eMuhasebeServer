@@ -39,7 +39,7 @@ internal sealed class CreateUserCommandHandler(
 
         IdentityResult identityResult = await userManager.CreateAsync(appUser, request.Password);
 
-        if (identityResult.Succeeded)
+        if (!identityResult.Succeeded)
         {
             return Result<string>.Failure(identityResult.Errors.Select(s => s.Description).ToList());
         }
