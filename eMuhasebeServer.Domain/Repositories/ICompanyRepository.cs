@@ -2,6 +2,6 @@
 using GenericRepository;
 
 namespace eMuhasebeServer.Domain.Repositories;
-internal interface ICompanyRepository : IRepository<Company>
+public interface ICompanyRepository : IRepository<Company>
 {
 }
