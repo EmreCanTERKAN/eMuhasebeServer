@@ -24,7 +24,7 @@ public sealed class UpdateCompanyCommandValidator : AbstractValidator<UpdateComp
         RuleFor(p => p.FullAddress).NotEmpty().WithMessage("Adres alanı boş olamaz");
         RuleFor(p => p.Database.DatabaseName).NotEmpty().WithMessage("Veritabanı alanı boş olamaz");
         RuleFor(p => p.Database.Server).NotEmpty().WithMessage("Sunucu alanı boş olamaz");
-        RuleFor(p => p.Database.UserId).NotEmpty().WithMessage("Kullanıcı adı boş olamaz");
+
     }
 }
 
@@ -46,7 +46,7 @@ internal sealed class UpdateCompanyCommandHandler(
         {
             bool isNameExist = await companyRepository.AnyAsync(p => p.TaxNumber == request.TaxNumber, cancellationToken);
 
-            if (!isNameExist)
+            if (isNameExist)
             {
                 return Result<string>.Failure("Bu vergi numarasına ait şirket mevcut");
             }

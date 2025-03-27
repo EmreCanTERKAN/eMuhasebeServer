@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using eMuhasebeServer.Application.Features.Companies;
 using eMuhasebeServer.Application.Features.Users;
 using eMuhasebeServer.Domain.Entities;
 
@@ -10,5 +11,8 @@ public sealed class MappingProfile : Profile
     {
         CreateMap<CreateUserCommand, AppUser>();
         CreateMap<UpdateUserCommand, AppUser>();
+
+        CreateMap<CreateCompanyCommand, Company>();
+        CreateMap<UpdateCompanyCommand, Company>();
     }
 }
