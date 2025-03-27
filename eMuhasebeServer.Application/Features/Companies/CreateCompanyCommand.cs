@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using eMuhasebeServer.Application.Services;
 using eMuhasebeServer.Domain.Entities;
 using eMuhasebeServer.Domain.Repositories;
 using eMuhasebeServer.Domain.ValueObjects;
@@ -44,6 +45,7 @@ public sealed class CreateCompanyCommandValidator : AbstractValidator<CreateComp
 internal sealed class CreateCompanyCommandHandler(
     ICompanyRepository companyRepository,
     IUnitOfWork unitOfWork,
+    ICacheService cacheService,
     IMapper mapper) : IRequestHandler<CreateCompanyCommand, Result<string>>
 {
     public async Task<Result<string>> Handle(CreateCompanyCommand request, CancellationToken cancellationToken)
@@ -59,6 +61,8 @@ internal sealed class CreateCompanyCommandHandler(
 
         await companyRepository.AddAsync(company, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
+
+        cacheService.Remove("companies");
         return "Şirket başarıyla oluşturuldu";
     }
 }

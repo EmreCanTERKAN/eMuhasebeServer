@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using eMuhasebeServer.Application.Services;
 using eMuhasebeServer.Domain.Entities;
 using eMuhasebeServer.Domain.Events;
 using eMuhasebeServer.Domain.Repositories;
@@ -24,6 +25,7 @@ internal sealed class UpdateUsercommandHandler(
     UserManager<AppUser> userManager,
     ICompanyUserRepository companyUserRepository,
     IUnitOfWork unitOfWork,
+    ICacheService cacheService,
     IMapper mapper) : IRequestHandler<UpdateUserCommand, Result<string>>
 {
     public async Task<Result<string>> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
@@ -92,6 +94,8 @@ internal sealed class UpdateUsercommandHandler(
 
         await companyUserRepository.AddRangeAsync(companyUsers,cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
+
+        cacheService.Remove("users");
 
         if (isMailChanged)
         {

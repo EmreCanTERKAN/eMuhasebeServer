@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using eMuhasebeServer.Application.Services;
 using eMuhasebeServer.Domain.Entities;
 using eMuhasebeServer.Domain.Events;
 using eMuhasebeServer.Domain.Repositories;
@@ -22,6 +23,7 @@ internal sealed class CreateUserCommandHandler(
     UserManager<AppUser> userManager,
     ICompanyUserRepository companyUserRepository,
     IUnitOfWork unitOfWork,
+    ICacheService cacheService,
     IMapper mapper) : IRequestHandler<CreateUserCommand, Result<string>>
 {
     public async Task<Result<string>> Handle(CreateUserCommand request, CancellationToken cancellationToken)
@@ -58,6 +60,8 @@ internal sealed class CreateUserCommandHandler(
         await companyUserRepository.AddRangeAsync(companyUsers, cancellationToken);
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
+
+        cacheService.Remove("users");
 
         await mediator.Publish(new AppUserEvent(appUser.Id));
 

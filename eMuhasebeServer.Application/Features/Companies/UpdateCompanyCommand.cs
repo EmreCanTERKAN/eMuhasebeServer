@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using eMuhasebeServer.Application.Services;
 using eMuhasebeServer.Domain.Entities;
 using eMuhasebeServer.Domain.Repositories;
 using eMuhasebeServer.Domain.ValueObjects;
@@ -31,6 +32,7 @@ public sealed class UpdateCompanyCommandValidator : AbstractValidator<UpdateComp
 internal sealed class UpdateCompanyCommandHandler(
     ICompanyRepository companyRepository,
     IUnitOfWork unitOfWork,
+    ICacheService cacheService,
     IMapper mapper) : IRequestHandler<UpdateCompanyCommand, Result<string>>
 {
     public async Task<Result<string>> Handle(UpdateCompanyCommand request, CancellationToken cancellationToken)
@@ -55,7 +57,7 @@ internal sealed class UpdateCompanyCommandHandler(
         mapper.Map(request, company);
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
-
+        cacheService.Remove("companies");
         return "Şirket başarıyla güncellendi";
     }
 }
