@@ -1,4 +1,5 @@
-﻿using eMuhasebeServer.Application.Features.Auth.ConfirmEmail;
+﻿using eMuhasebeServer.Application.Features.Auth.ChangeCompany;
+using eMuhasebeServer.Application.Features.Auth.ConfirmEmail;
 using eMuhasebeServer.Application.Features.Auth.Login;
 using eMuhasebeServer.Application.Features.Auth.SendConfirmEmail;
 using eMuhasebeServer.WebAPI.Abstractions;
@@ -8,19 +9,22 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace eMuhasebeServer.WebAPI.Controllers;
 
-[AllowAnonymous]
+
 public sealed class AuthController : ApiController
 {
     public AuthController(IMediator mediator) : base(mediator)
     {
     }
 
+    [AllowAnonymous]
     [HttpPost]
     public async Task<IActionResult> Login(LoginCommand request, CancellationToken cancellationToken)
     {
         var response = await _mediator.Send(request, cancellationToken);
         return StatusCode(response.StatusCode, response);
     }
+
+    [AllowAnonymous]
     [HttpPost]
     public async Task<IActionResult> ConfirmEmail(ConfirmEmailCommand request, CancellationToken cancellationToken)
     {
@@ -28,8 +32,17 @@ public sealed class AuthController : ApiController
         return StatusCode(response.StatusCode, response);
     }
 
+    [AllowAnonymous]
     [HttpPost]
     public async Task<IActionResult> SendConfirmEmail(SendConfirmEmailCommand request, CancellationToken cancellationToken)
+    {
+        var response = await _mediator.Send(request, cancellationToken);
+        return StatusCode(response.StatusCode, response);
+    }
+
+    [HttpPost]
+    [Authorize(AuthenticationSchemes = "Bearer")]
+    public async Task<IActionResult> ChangeCompany(ChangeCompanyCommand request, CancellationToken cancellationToken)
     {
         var response = await _mediator.Send(request, cancellationToken);
         return StatusCode(response.StatusCode, response);
