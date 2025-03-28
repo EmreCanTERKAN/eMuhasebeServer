@@ -1,7 +1,9 @@
-﻿using eMuhasebeServer.Domain.Entities;
+﻿using eMuhasebeServer.Application.Services;
+using eMuhasebeServer.Domain.Entities;
 using eMuhasebeServer.Domain.Repositories;
 using eMuhasebeServer.Infrastructure.Context;
 using eMuhasebeServer.Infrastructure.Options;
+using eMuhasebeServer.Infrastructure.Services;
 using GenericRepository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -10,6 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Scrutor;
+using StackExchange.Redis;
 using System.Reflection;
 
 namespace eMuhasebeServer.Infrastructure;
@@ -18,6 +21,13 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
+
+        services.AddMemoryCache();
+        services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect("localhost"));
+
+        // services.AddScoped<ICacheService, MemoryCacheService>();
+        services.AddScoped<ICacheService, RedisCacheService>();
+
         services.AddScoped<CompanyDbContext>();
 
         services.AddDbContext<ApplicationDbContext>(options =>
