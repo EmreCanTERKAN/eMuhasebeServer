@@ -16,6 +16,7 @@ public sealed record CreateUserCommand(
     string UserName,
     string Email,
     string Password,
+    bool IsAdmin,
     List<Guid> CompanyIds) : IRequest<Result<string>>;
 
 internal sealed class CreateUserCommandHandler(

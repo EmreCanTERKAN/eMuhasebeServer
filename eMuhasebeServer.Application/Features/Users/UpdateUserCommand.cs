@@ -17,6 +17,7 @@ public sealed record UpdateUserCommand(
     string UserName,
     string Email,
     string? Password,
+    bool IsAdmin,
     List<Guid> CompanyIds) : IRequest<Result<string>>;
 
 
