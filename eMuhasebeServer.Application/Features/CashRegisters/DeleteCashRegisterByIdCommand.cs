@@ -15,7 +15,7 @@ internal sealed class DeleteCashRegisterByIdCommandHandler(
 {
     public async Task<Result<string>> Handle(DeleteCashRegisterByIdCommand request, CancellationToken cancellationToken)
     {
-        CashRegister? cashRegister = await cashRegisterRepository.GetByExpressionAsync(p => p.Id == request.Id, cancellationToken);
+        CashRegister? cashRegister = await cashRegisterRepository.GetByExpressionWithTrackingAsync(p => p.Id == request.Id, cancellationToken);
 
         if (cashRegister is null)
         {

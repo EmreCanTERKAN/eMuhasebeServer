@@ -2,7 +2,6 @@
 using eMuhasebeServer.Application.Services;
 using eMuhasebeServer.Domain.Entities;
 using eMuhasebeServer.Domain.Repositories;
-using GenericRepository;
 using MediatR;
 using TS.Result;
 
@@ -10,7 +9,7 @@ namespace eMuhasebeServer.Application.Features.CashRegisters;
 public sealed record UpdateCashRegisterCommand(
     Guid Id,
     string Name,
-    int TypeValue) : IRequest<Result<string>>;
+    int CurrencyTypeValue) : IRequest<Result<string>>;
 
 internal sealed class UpdateCashRegisterCommandHandler(
     ICacheService cacheService,

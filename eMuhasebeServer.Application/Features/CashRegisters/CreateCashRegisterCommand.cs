@@ -8,7 +8,7 @@ using TS.Result;
 namespace eMuhasebeServer.Application.Features.CashRegisters;
 public sealed record CreateCashRegisterCommand(
     string Name,
-    int TypeValue) : IRequest<Result<string>>;
+    int CurrencyTypeValue) : IRequest<Result<string>>;
 
 internal sealed class CreateCashRegisterCommandHandler(
     ICashRegisterRepository cashRegisterRepository,
@@ -30,7 +30,7 @@ internal sealed class CreateCashRegisterCommandHandler(
         await cashRegisterRepository.AddAsync(cashRegister);
         await unitOfWorkCompany.SaveChangesAsync(cancellationToken);
 
-        cacheService.Remove("cashRegister");
+        cacheService.Remove("cashRegisters");
 
         return "Kasa kaydı başarıyla tamamlandı.";
     }
