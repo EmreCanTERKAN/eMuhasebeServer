@@ -1,10 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Ardalis.SmartEnum;
 
 namespace eMuhasebeServer.Domain.Enums;
-internal class CurrencyTypeEnum
+public sealed class CurrencyTypeEnum : SmartEnum<CurrencyTypeEnum>
 {
+    public static readonly CurrencyTypeEnum TL = new("TL", 1);
+    public static readonly CurrencyTypeEnum USD = new("USD", 2);
+    public static readonly CurrencyTypeEnum EUR = new("EUR", 2);
+    public CurrencyTypeEnum(string name, int value) : base(name, value)
+    {
+    }
 }

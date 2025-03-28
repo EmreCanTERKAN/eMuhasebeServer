@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
+using eMuhasebeServer.Application.Features.CashRegisters;
 using eMuhasebeServer.Application.Features.Companies;
 using eMuhasebeServer.Application.Features.Users;
 using eMuhasebeServer.Domain.Entities;
+using eMuhasebeServer.Domain.Enums;
 
 namespace eMuhasebeServer.Application.Mapping;
 
@@ -14,5 +16,12 @@ public sealed class MappingProfile : Profile
 
         CreateMap<CreateCompanyCommand, Company>();
         CreateMap<UpdateCompanyCommand, Company>();
+
+        CreateMap<CreateCashRegisterCommand, CashRegister>().ForMember(member => member.CurrencyType, options =>
+        {
+            options.MapFrom(map => CurrencyTypeEnum.FromValue(map.TypeValue));
+        });
+
+        CreateMap<UpdateCashRegisterCommand, CashRegister>();
     }
 }
