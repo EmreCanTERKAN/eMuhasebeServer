@@ -9,4 +9,5 @@ public sealed class CashRegister : Entity
     public decimal DepositAmount { get; set; } // Giriş
     public decimal WithdrawalAmount { get; set; } // Çıkış
     public decimal Balance { get; set; } // Bakiye
+    public List<CashRegisterDetail>? Details { get; set; }
 }
