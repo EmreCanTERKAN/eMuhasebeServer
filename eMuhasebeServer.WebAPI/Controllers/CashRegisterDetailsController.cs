@@ -5,9 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace eMuhasebeServer.WebAPI.Controllers;
 
-public class CashRegistersDetailsController : ApiController
+public class CashRegisterDetailsController : ApiController
 {
-    public CashRegistersDetailsController(IMediator mediator) : base(mediator)
+    public CashRegisterDetailsController(IMediator mediator) : base(mediator)
     {
     }
 

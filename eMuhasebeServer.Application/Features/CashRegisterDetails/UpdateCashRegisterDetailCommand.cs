@@ -9,31 +9,34 @@ public sealed record UpdateCashRegisterDetailCommand(
     Guid Id,
     Guid CashRegisterId,
     int Type,
+    DateOnly Date,
     decimal Amount,
     string Description) : IRequest<Result<string>>;
 
 internal sealed class UpdateCashRegisterDetailCommandHandler(
     ICashRegisterRepository cashRegisterRepository,
     ICashRegisterDetailRepository cashRegisterDetailRepository,
-    ICacheService cacheService,
-    IUnitOfWorkCompany unitOfWorkCompany) : IRequestHandler<UpdateCashRegisterDetailCommand, Result<string>>
+    IUnitOfWorkCompany unitOfWorkCompany,
+    ICacheService cacheService) : IRequestHandler<UpdateCashRegisterDetailCommand, Result<string>>
 {
     public async Task<Result<string>> Handle(UpdateCashRegisterDetailCommand request, CancellationToken cancellationToken)
     {
-        CashRegisterDetail? cashRegisterDetail = await cashRegisterDetailRepository
-    .GetByExpressionWithTrackingAsync(p => p.Id == request.Id, cancellationToken);
+        CashRegisterDetail? cashRegisterDetail =
+            await cashRegisterDetailRepository
+            .GetByExpressionWithTrackingAsync(p => p.Id == request.Id, cancellationToken);
 
         if (cashRegisterDetail is null)
         {
             return Result<string>.Failure("Kasa hareketi bulunamadı");
         }
 
-        CashRegister? cashRegister = await cashRegisterRepository
-            .GetByExpressionWithTrackingAsync(p => p.Id == cashRegisterDetail.Id, cancellationToken);
+        CashRegister? cashRegister =
+            await cashRegisterRepository
+            .GetByExpressionWithTrackingAsync(p => p.Id == cashRegisterDetail.CashRegisterId, cancellationToken);
 
         if (cashRegister is null)
         {
-            return Result<string>.Failure("Kasa Bulunamadı");
+            return Result<string>.Failure("Kasa bulunamadı");
         }
 
         cashRegister.DepositAmount -= cashRegisterDetail.DepositAmount;
@@ -45,11 +48,12 @@ internal sealed class UpdateCashRegisterDetailCommandHandler(
         cashRegisterDetail.DepositAmount = request.Type == 0 ? request.Amount : 0;
         cashRegisterDetail.WithdrawalAmount = request.Type == 1 ? request.Amount : 0;
         cashRegisterDetail.Description = request.Description;
+        cashRegisterDetail.Date = request.Date;
 
         await unitOfWorkCompany.SaveChangesAsync(cancellationToken);
 
         cacheService.Remove("cashRegisters");
 
-        return "Kasa hareketei başarıyla güncellendi";
+        return "Kasa hareketi başarıyla güncellendi";
     }
 }

@@ -9,14 +9,15 @@ public sealed record DeleteCashRegisterDetailByIdCommand(
     Guid Id) : IRequest<Result<string>>;
 
 internal sealed class DeleteCashRegisterDetailByIdCommandHandler(
-    ICashRegisterDetailRepository cashRegisterDetailRepository,
     ICashRegisterRepository cashRegisterRepository,
+    ICashRegisterDetailRepository cashRegisterDetailRepository,
     IUnitOfWorkCompany unitOfWorkCompany,
     ICacheService cacheService) : IRequestHandler<DeleteCashRegisterDetailByIdCommand, Result<string>>
 {
-    async Task<Result<string>> IRequestHandler<DeleteCashRegisterDetailByIdCommand, Result<string>>.Handle(DeleteCashRegisterDetailByIdCommand request, CancellationToken cancellationToken)
+    public async Task<Result<string>> Handle(DeleteCashRegisterDetailByIdCommand request, CancellationToken cancellationToken)
     {
-        CashRegisterDetail? cashRegisterDetail = await cashRegisterDetailRepository
+        CashRegisterDetail? cashRegisterDetail =
+            await cashRegisterDetailRepository
             .GetByExpressionWithTrackingAsync(p => p.Id == request.Id, cancellationToken);
 
         if (cashRegisterDetail is null)
@@ -24,12 +25,13 @@ internal sealed class DeleteCashRegisterDetailByIdCommandHandler(
             return Result<string>.Failure("Kasa hareketi bulunamadı");
         }
 
-        CashRegister? cashRegister = await cashRegisterRepository
-            .GetByExpressionWithTrackingAsync(p => p.Id == cashRegisterDetail.Id, cancellationToken);
+        CashRegister? cashRegister =
+            await cashRegisterRepository
+            .GetByExpressionWithTrackingAsync(p => p.Id == cashRegisterDetail.CashRegisterId, cancellationToken);
 
         if (cashRegister is null)
         {
-            return Result<string>.Failure("Kasa Bulunamadı");
+            return Result<string>.Failure("Kasa bulunamadı");
         }
 
         cashRegister.DepositAmount -= cashRegisterDetail.DepositAmount;
@@ -37,24 +39,28 @@ internal sealed class DeleteCashRegisterDetailByIdCommandHandler(
 
         if (cashRegisterDetail.CashRegisterDetailId is not null)
         {
-            CashRegisterDetail? oppositeCashRegisterDetail = await cashRegisterDetailRepository
-                .GetByExpressionWithTrackingAsync(p => p.Id == cashRegisterDetail.CashRegisterDetailId, cancellationToken);
+            CashRegisterDetail? oppositeCashRegisterDetail =
+            await cashRegisterDetailRepository
+            .GetByExpressionWithTrackingAsync(p => p.Id == cashRegisterDetail.CashRegisterDetailId, cancellationToken);
 
-            if (oppositeCashRegisterDetail is null)
+            if (cashRegisterDetail is null)
             {
                 return Result<string>.Failure("Kasa hareketi bulunamadı");
             }
 
-            CashRegister? oppositeCashRegister = await cashRegisterRepository
-                .GetByExpressionWithTrackingAsync(p => p.Id == oppositeCashRegisterDetail.CashRegisterDetailId, cancellationToken);
+            CashRegister? oppositeCashRegister =
+            await cashRegisterRepository
+            .GetByExpressionWithTrackingAsync(p => p.Id == oppositeCashRegisterDetail.CashRegisterId, cancellationToken);
 
-            if (oppositeCashRegister is null)
+            if (cashRegister is null)
             {
-                return Result<string>.Failure("Kasa Bulunamadı");
+                return Result<string>.Failure("Kasa bulunamadı");
             }
 
             oppositeCashRegister.DepositAmount -= oppositeCashRegisterDetail.DepositAmount;
             oppositeCashRegister.WithdrawalAmount -= oppositeCashRegisterDetail.WithdrawalAmount;
+
+            cashRegisterDetailRepository.Delete(oppositeCashRegisterDetail);
         }
 
         cashRegisterDetailRepository.Delete(cashRegisterDetail);
