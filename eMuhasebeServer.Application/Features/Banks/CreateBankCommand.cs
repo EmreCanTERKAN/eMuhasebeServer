@@ -31,7 +31,7 @@ internal sealed class CreateBankCommandHandler(
         await bankRepository.AddAsync(bank, cancellationToken);
         await unitOfWorkCompany.SaveChangesAsync(cancellationToken);
 
-        cacheService.Remove("bank");
+        cacheService.Remove("banks");
 
         return "Banka başarıyla kaydedildi";
     }
