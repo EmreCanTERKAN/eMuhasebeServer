@@ -12,8 +12,7 @@ public sealed record CreateCashRegisterDetailCommand(
     decimal Amount,
     Guid? OppositeCashRegisterId,
     decimal OppositeAmount,
-    string Description
-    ) : IRequest<Result<string>>;
+    string Description) : IRequest<Result<string>>;
 
 internal sealed class CreateCashRegisterDetailCommandHandler(
     ICashRegisterRepository cashRegisterRepository,
@@ -39,7 +38,7 @@ internal sealed class CreateCashRegisterDetailCommandHandler(
         };
 
         await cashRegisterDetailRepository.AddAsync(cashRegisterDetail, cancellationToken);
-
+        
         if (request.OppositeCashRegisterId is not null)
         {
             CashRegister oppositeCashRegister = await cashRegisterRepository.GetByExpressionWithTrackingAsync(p => p.Id == request.OppositeCashRegisterId, cancellationToken);
@@ -52,18 +51,17 @@ internal sealed class CreateCashRegisterDetailCommandHandler(
                 Date = request.Date,
                 DepositAmount = request.Type == 1 ? request.OppositeAmount : 0,
                 WithdrawalAmount = request.Type == 0 ? request.OppositeAmount : 0,
-                CashRegisterDetailId = cashRegisterDetail.Id,
+                CashRegisterDetailOppositeId = cashRegisterDetail.Id,
                 Description = request.Description,
                 CashRegisterId = (Guid)request.OppositeCashRegisterId
             };
 
-            cashRegisterDetail.CashRegisterDetailId = oppositeCashRegisterDetail.Id;
+            cashRegisterDetail.CashRegisterDetailOppositeId = oppositeCashRegisterDetail.Id;
 
             await cashRegisterDetailRepository.AddAsync(oppositeCashRegisterDetail, cancellationToken);
+            
         }
-
         await unitOfWorkCompany.SaveChangesAsync(cancellationToken);
-
         cacheService.Remove("cashRegisters");
 
         return "Kasa hareketi başarıyla işlendi";

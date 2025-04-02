@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using eMuhasebeServer.Infrastructure.Context;
 
@@ -11,9 +12,11 @@ using eMuhasebeServer.Infrastructure.Context;
 namespace eMuhasebeServer.Infrastructure.Migrations.CompanyDb
 {
     [DbContext(typeof(CompanyDbContext))]
-    partial class CompanyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250402203057_mg_9")]
+    partial class mg_9
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -82,6 +85,8 @@ namespace eMuhasebeServer.Infrastructure.Migrations.CompanyDb
                         .HasColumnType("money");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("BankDetailOppositeId");
 
                     b.HasIndex("BankId");
 
@@ -155,11 +160,17 @@ namespace eMuhasebeServer.Infrastructure.Migrations.CompanyDb
 
             modelBuilder.Entity("eMuhasebeServer.Domain.Entities.BankDetail", b =>
                 {
+                    b.HasOne("eMuhasebeServer.Domain.Entities.BankDetail", "BankDetailOpposite")
+                        .WithMany()
+                        .HasForeignKey("BankDetailOppositeId");
+
                     b.HasOne("eMuhasebeServer.Domain.Entities.Bank", null)
                         .WithMany("Details")
                         .HasForeignKey("BankId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("BankDetailOpposite");
                 });
 
             modelBuilder.Entity("eMuhasebeServer.Domain.Entities.CashRegisterDetail", b =>

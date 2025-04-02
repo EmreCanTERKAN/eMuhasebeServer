@@ -37,32 +37,32 @@ internal sealed class CreateBankDetailCommandHandler(
         };
 
         await bankDetailRepository.AddAsync(bankDetail, cancellationToken);
+        
 
         if (request.OppositeBankId is not null)
         {
             Bank oppositeBank = await bankRepository.GetByExpressionWithTrackingAsync(p => p.Id == request.OppositeBankId, cancellationToken);
 
-            oppositeBank.DepositAmount += (request.Type == 1 ? request.OppositeAmount : 0);
-            oppositeBank.WithdrawalAmount += (request.Type == 0 ? request.OppositeAmount : 0);
+            oppositeBank.DepositAmount += (request.Type == 1 ? request.Amount : 0);
+            oppositeBank.WithdrawalAmount += (request.Type == 0 ? request.Amount : 0);
 
             BankDetail oppositeBankDetail = new()
             {
                 Date = request.Date,
                 DepositAmount = request.Type == 1 ? request.OppositeAmount : 0,
                 WithdrawalAmount = request.Type == 0 ? request.OppositeAmount : 0,
-                BankDetailId = bankDetail.Id,
+                BankDetailOppositeId = bankDetail.Id,
                 Description = request.Description,
                 BankId = (Guid)request.OppositeBankId
             };
 
-            bankDetail.BankDetailId = oppositeBankDetail.Id;
+            bankDetail.BankDetailOppositeId = oppositeBankDetail.Id;
 
 
             await bankDetailRepository.AddAsync(oppositeBankDetail, cancellationToken);
+            
         }
-
         await unitOfWorkCompany.SaveChangesAsync(cancellationToken);
-
         cacheService.Remove("banks");
 
         return "Banka hareketi başarıyla işlendi";
