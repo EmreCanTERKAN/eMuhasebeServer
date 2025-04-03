@@ -8,6 +8,8 @@ using TS.Result;
 namespace eMuhasebeServer.Application.Features.Companies;
 public sealed record GetAllCompanyQuery() : IRequest<Result<List<Company>>>;
 
+
+
 internal sealed class GetAllCompanyQueryHandler(
     ICompanyRepository companyRepository,
     ICacheService cacheService) : IRequestHandler<GetAllCompanyQuery, Result<List<Company>>>
