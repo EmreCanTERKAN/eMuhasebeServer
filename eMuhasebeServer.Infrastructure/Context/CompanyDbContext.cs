@@ -8,6 +8,7 @@ using System.Security.Claims;
 namespace eMuhasebeServer.Infrastructure.Context;
 internal sealed class CompanyDbContext : DbContext, IUnitOfWorkCompany
 {
+    #region Connecttion
     private string connectionString = string.Empty;
 
     public CompanyDbContext(Company company)
@@ -21,55 +22,6 @@ internal sealed class CompanyDbContext : DbContext, IUnitOfWorkCompany
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         optionsBuilder.UseSqlServer(connectionString);
-    }
-
-    public DbSet<CashRegister> CashRegisters { get; set; }
-    public DbSet<CashRegisterDetail> CashRegisterDetails { get; set; }
-    public DbSet<Bank> Banks { get; set; }
-    public DbSet<BankDetail> BankDetails { get; set; }
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        #region CashRegister
-        modelBuilder.Entity<CashRegister>().Property(p => p.DepositAmount).HasColumnType("money");
-        modelBuilder.Entity<CashRegister>().Property(p => p.WithdrawalAmount).HasColumnType("money");
-        modelBuilder.Entity<CashRegister>().Property(p => p.Balance).HasColumnType("money");
-        modelBuilder.Entity<CashRegister>()
-            .Property(p => p.CurrencyType)
-            .HasConversion(
-                type => type.Value,
-                value => CurrencyTypeEnum.FromValue(value));
-        modelBuilder.Entity<CashRegister>().HasQueryFilter(filter => !filter.IsDeleted);
-        modelBuilder.Entity<CashRegister>()
-            .HasMany(p => p.Details)
-            .WithOne()
-            .HasForeignKey(p => p.CashRegisterId);
-        #endregion
-        #region CashRegisterDetail
-        modelBuilder.Entity<CashRegisterDetail>().Property(p => p.DepositAmount).HasColumnType("money");
-        modelBuilder.Entity<CashRegisterDetail>().Property(p => p.WithdrawalAmount).HasColumnType("money");
-        modelBuilder.Entity<CashRegisterDetail>().HasQueryFilter(filter => !filter.IsDeleted);
-        #endregion
-        #region Bank
-        modelBuilder.Entity<Bank>().Property(p => p.DepositAmount).HasColumnType("money");
-        modelBuilder.Entity<Bank>().Property(p => p.WithdrawalAmount).HasColumnType("money");
-        modelBuilder.Entity<Bank>()
-            .Property(p => p.CurrencyType)
-            .HasConversion(
-                 type => type.Value,
-                 value => CurrencyTypeEnum.FromValue(value));
-        modelBuilder.Entity<Bank>().HasQueryFilter(filter => !filter.IsDeleted);
-        modelBuilder.Entity<Bank>()
-            .HasMany(p => p.Details)
-            .WithOne()
-            .HasForeignKey(p => p.BankId);
-        #endregion
-        #region BankDetail
-        modelBuilder.Entity<BankDetail>().Property(p => p.DepositAmount).HasColumnType("money");
-        modelBuilder.Entity<BankDetail>().Property(p => p.WithdrawalAmount).HasColumnType("money");
-        modelBuilder.Entity<BankDetail>().HasQueryFilter(filter => !filter.IsDeleted);
-        #endregion
-
-
     }
 
     private void CreateConnectionString(IHttpContextAccessor httpContextAccessor, ApplicationDbContext context)
@@ -115,4 +67,69 @@ internal sealed class CompanyDbContext : DbContext, IUnitOfWorkCompany
                 "Multi Subnet Failover=False";
         }
     }
+
+    #endregion
+
+    public DbSet<CashRegister> CashRegisters { get; set; }
+    public DbSet<CashRegisterDetail> CashRegisterDetails { get; set; }
+    public DbSet<Bank> Banks { get; set; }
+    public DbSet<BankDetail> BankDetails { get; set; }
+    public DbSet<Customer> Customers { get; set; }
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        #region CashRegister
+        modelBuilder.Entity<CashRegister>().Property(p => p.DepositAmount).HasColumnType("money");
+        modelBuilder.Entity<CashRegister>().Property(p => p.WithdrawalAmount).HasColumnType("money");
+        modelBuilder.Entity<CashRegister>().Property(p => p.Balance).HasColumnType("money");
+        modelBuilder.Entity<CashRegister>()
+            .Property(p => p.CurrencyType)
+            .HasConversion(
+                type => type.Value,
+                value => CurrencyTypeEnum.FromValue(value));
+        modelBuilder.Entity<CashRegister>().HasQueryFilter(filter => !filter.IsDeleted);
+        modelBuilder.Entity<CashRegister>()
+            .HasMany(p => p.Details)
+            .WithOne()
+            .HasForeignKey(p => p.CashRegisterId);
+        #endregion
+        #region CashRegisterDetail
+        modelBuilder.Entity<CashRegisterDetail>().Property(p => p.DepositAmount).HasColumnType("money");
+        modelBuilder.Entity<CashRegisterDetail>().Property(p => p.WithdrawalAmount).HasColumnType("money");
+        modelBuilder.Entity<CashRegisterDetail>().HasQueryFilter(filter => !filter.IsDeleted);
+        #endregion
+        #region Bank
+        modelBuilder.Entity<Bank>().Property(p => p.DepositAmount).HasColumnType("money");
+        modelBuilder.Entity<Bank>().Property(p => p.WithdrawalAmount).HasColumnType("money");
+        modelBuilder.Entity<Bank>()
+            .Property(p => p.CurrencyType)
+            .HasConversion(
+                 type => type.Value,
+                 value => CurrencyTypeEnum.FromValue(value));
+        modelBuilder.Entity<Bank>().HasQueryFilter(filter => !filter.IsDeleted);
+        modelBuilder.Entity<Bank>()
+            .HasMany(p => p.Details)
+            .WithOne()
+            .HasForeignKey(p => p.BankId);
+        #endregion
+        #region BankDetail
+        modelBuilder.Entity<BankDetail>().Property(p => p.DepositAmount).HasColumnType("money");
+        modelBuilder.Entity<BankDetail>().Property(p => p.WithdrawalAmount).HasColumnType("money");
+        modelBuilder.Entity<BankDetail>().HasQueryFilter(filter => !filter.IsDeleted);
+        #endregion
+        #region Customer
+        modelBuilder.Entity<Customer>().Property(p => p.DepositAmount).HasColumnType("money");
+        modelBuilder.Entity<Customer>().Property(p => p.WithdrawalAmount).HasColumnType("money");
+        modelBuilder.Entity<Customer>()
+            .Property(p => p.Type)
+            .HasConversion(
+                type => type.Value, 
+                value => CustomerTypeEnum.FromValue(value));
+        modelBuilder.Entity<Customer>().HasQueryFilter(p => p.IsDeleted == false);
+
+        #endregion
+
+
+    }
+
+
 }

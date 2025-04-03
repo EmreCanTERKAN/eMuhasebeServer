@@ -2,6 +2,7 @@
 using GenericRepository;
 
 namespace eMuhasebeServer.Domain.Repositories;
-public interface IBankRepository : IRepository<Bank>
+
+public interface ICustomerRepository : IRepository<Customer>
 {
 }
