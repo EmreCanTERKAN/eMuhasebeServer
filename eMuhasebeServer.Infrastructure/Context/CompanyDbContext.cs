@@ -76,6 +76,7 @@ internal sealed class CompanyDbContext : DbContext, IUnitOfWorkCompany
     public DbSet<BankDetail> BankDetails { get; set; }
     public DbSet<Customer> Customers { get; set; }
     public DbSet<CustomerDetail> CustomerDetails { get; set; }
+    public DbSet<Product> Products { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

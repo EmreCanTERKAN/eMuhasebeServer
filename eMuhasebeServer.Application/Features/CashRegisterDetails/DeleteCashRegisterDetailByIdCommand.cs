@@ -9,6 +9,8 @@ public sealed record DeleteCashRegisterDetailByIdCommand(
     Guid Id) : IRequest<Result<string>>;
 
 internal sealed class DeleteCashRegisterDetailByIdCommandHandler(
+    ICustomerRepository customerRepository,
+    ICustomerDetailRepository customerDetailRepository,
     IBankRepository bankRepository,
     IBankDetailRepository bankDetailRepository,
     ICashRegisterRepository cashRegisterRepository,
@@ -89,6 +91,33 @@ internal sealed class DeleteCashRegisterDetailByIdCommandHandler(
             oppositeBank.WithdrawalAmount -= oppositeBankDetail.WithdrawalAmount;
 
             bankDetailRepository.Delete(oppositeBankDetail);
+        }
+
+        if (cashRegisterDetail.CustomerDetailId is not null)
+        {
+            CustomerDetail? oppositeCustomerDetail =
+            await customerDetailRepository
+            .GetByExpressionWithTrackingAsync(p => p.Id == cashRegisterDetail.CustomerDetailId, cancellationToken);
+
+            if (oppositeCustomerDetail is null)
+            {
+                return Result<string>.Failure("Cari hareketi bulunamadı");
+            }
+
+            Customer? oppositeCustomer =
+            await customerRepository
+            .GetByExpressionWithTrackingAsync(p => p.Id == oppositeCustomerDetail.CustomerId, cancellationToken);
+
+            if (oppositeCustomer is null)
+            {
+                return Result<string>.Failure("Cari bulunamadı");
+            }
+
+            oppositeCustomer.DepositAmount -= oppositeCustomerDetail.DepositAmount;
+            oppositeCustomer.WithdrawalAmount -= oppositeCustomerDetail.WithdrawalAmount;
+
+            customerDetailRepository.Delete(oppositeCustomerDetail);
+            cacheService.Remove("customers");
         }
 
         cashRegisterDetailRepository.Delete(cashRegisterDetail);
