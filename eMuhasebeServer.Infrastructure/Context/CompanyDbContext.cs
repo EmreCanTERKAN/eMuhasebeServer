@@ -139,6 +139,11 @@ internal sealed class CompanyDbContext : DbContext, IUnitOfWorkCompany
                 type => type.Value,
                 value => CustomerDetailTypeEnum.FromValue(value));
         #endregion
+        #region Product
+        modelBuilder.Entity<Product>().HasQueryFilter(p => p.IsDeleted == false);
+        modelBuilder.Entity<Product>().Property(p => p.Deposit).HasColumnType("decimal(7,2)");
+        modelBuilder.Entity<Product>().Property(p => p.Withdrawal).HasColumnType("decimal(7,2)");
+        #endregion
     }
 
 
