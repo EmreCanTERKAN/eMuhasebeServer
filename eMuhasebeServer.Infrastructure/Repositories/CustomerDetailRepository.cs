@@ -5,9 +5,9 @@ using GenericRepository;
 
 namespace eMuhasebeServer.Infrastructure.Repositories;
 
-internal sealed class CustomerRepository : Repository<Customer, CompanyDbContext>, ICustomerRepository
+internal sealed class CustomerDetailRepository : Repository<CustomerDetail, CompanyDbContext>, ICustomerDetailRepository
 {
-    public CustomerRepository(CompanyDbContext context) : base(context)
+    public CustomerDetailRepository(CompanyDbContext context) : base(context)
     {
     }
-}
+}   

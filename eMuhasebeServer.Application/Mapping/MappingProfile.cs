@@ -2,6 +2,7 @@
 using eMuhasebeServer.Application.Features.Banks;
 using eMuhasebeServer.Application.Features.CashRegisters;
 using eMuhasebeServer.Application.Features.Companies;
+using eMuhasebeServer.Application.Features.Customers;
 using eMuhasebeServer.Application.Features.Users;
 using eMuhasebeServer.Domain.Entities;
 using eMuhasebeServer.Domain.Enums;
@@ -36,6 +37,15 @@ public sealed class MappingProfile : Profile
         CreateMap<UpdateBankCommand, Bank>().ForMember(member => member.CurrencyType, options =>
         {
             options.MapFrom(map => CurrencyTypeEnum.FromValue(map.CurrencyTypeValue));
+        });
+
+        CreateMap<CreateCustomerCommand, Customer>().ForMember(member => member.Type, options =>
+        {
+            options.MapFrom(map => CustomerTypeEnum.FromValue(map.TypeValue));
+        });
+        CreateMap<UpdateCustomerCommand, Customer>().ForMember(member => member.Type, options =>
+        {
+            options.MapFrom(map => CustomerTypeEnum.FromValue(map.TypeValue));
         });
     }
 }

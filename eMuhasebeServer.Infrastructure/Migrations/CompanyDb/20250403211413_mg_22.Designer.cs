@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using eMuhasebeServer.Infrastructure.Context;
 
@@ -11,9 +12,11 @@ using eMuhasebeServer.Infrastructure.Context;
 namespace eMuhasebeServer.Infrastructure.Migrations.CompanyDb
 {
     [DbContext(typeof(CompanyDbContext))]
-    partial class CompanyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250403211413_mg_22")]
+    partial class mg_22
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -66,9 +69,6 @@ namespace eMuhasebeServer.Infrastructure.Migrations.CompanyDb
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("CashRegisterDetailId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("CustomerDetailId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateOnly>("Date")
@@ -211,9 +211,6 @@ namespace eMuhasebeServer.Infrastructure.Migrations.CompanyDb
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("BankDetailId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("CustomerId")

@@ -8,7 +8,7 @@ using TS.Result;
 namespace eMuhasebeServer.Application.Features.Customers;
 public sealed record CreateCustomerCommand(
     string Name,
-    int CustomerTypeValue,
+    int TypeValue,
     string City,
     string Town,
     string FullAddress,

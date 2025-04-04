@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using eMuhasebeServer.Infrastructure.Context;
 
@@ -11,9 +12,11 @@ using eMuhasebeServer.Infrastructure.Context;
 namespace eMuhasebeServer.Infrastructure.Migrations.CompanyDb
 {
     [DbContext(typeof(CompanyDbContext))]
-    partial class CompanyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250403164213_mg_19")]
+    partial class mg_19
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -66,9 +69,6 @@ namespace eMuhasebeServer.Infrastructure.Migrations.CompanyDb
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("CashRegisterDetailId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("CustomerDetailId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateOnly>("Date")
@@ -207,44 +207,6 @@ namespace eMuhasebeServer.Infrastructure.Migrations.CompanyDb
                     b.ToTable("Customers");
                 });
 
-            modelBuilder.Entity("eMuhasebeServer.Domain.Entities.CustomerDetail", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("BankDetailId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("CustomerId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateOnly>("Date")
-                        .HasColumnType("date");
-
-                    b.Property<decimal>("DepositAmount")
-                        .HasColumnType("money");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("WithdrawalAmount")
-                        .HasColumnType("money");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CustomerId");
-
-                    b.ToTable("CustomerDetails");
-                });
-
             modelBuilder.Entity("eMuhasebeServer.Domain.Entities.BankDetail", b =>
                 {
                     b.HasOne("eMuhasebeServer.Domain.Entities.Bank", null)
@@ -263,15 +225,6 @@ namespace eMuhasebeServer.Infrastructure.Migrations.CompanyDb
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("eMuhasebeServer.Domain.Entities.CustomerDetail", b =>
-                {
-                    b.HasOne("eMuhasebeServer.Domain.Entities.Customer", null)
-                        .WithMany("CustomerDetails")
-                        .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("eMuhasebeServer.Domain.Entities.Bank", b =>
                 {
                     b.Navigation("Details");
@@ -280,11 +233,6 @@ namespace eMuhasebeServer.Infrastructure.Migrations.CompanyDb
             modelBuilder.Entity("eMuhasebeServer.Domain.Entities.CashRegister", b =>
                 {
                     b.Navigation("Details");
-                });
-
-            modelBuilder.Entity("eMuhasebeServer.Domain.Entities.Customer", b =>
-                {
-                    b.Navigation("CustomerDetails");
                 });
 #pragma warning restore 612, 618
         }

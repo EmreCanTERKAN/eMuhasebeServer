@@ -9,7 +9,7 @@ namespace eMuhasebeServer.Application.Features.Customers;
 public sealed record UpdateCustomerCommand(
     Guid Id,
     string Name,
-    int CustomerTypeValue,
+    int TypeValue,
     string City,
     string Town,
     string FullAddress,

@@ -75,6 +75,8 @@ internal sealed class CompanyDbContext : DbContext, IUnitOfWorkCompany
     public DbSet<Bank> Banks { get; set; }
     public DbSet<BankDetail> BankDetails { get; set; }
     public DbSet<Customer> Customers { get; set; }
+    public DbSet<CustomerDetail> CustomerDetails { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         #region CashRegister
@@ -125,10 +127,17 @@ internal sealed class CompanyDbContext : DbContext, IUnitOfWorkCompany
                 type => type.Value, 
                 value => CustomerTypeEnum.FromValue(value));
         modelBuilder.Entity<Customer>().HasQueryFilter(p => p.IsDeleted == false);
-
         #endregion
-
-
+        #region CustomerDetail
+        modelBuilder.Entity<CustomerDetail>().Property(p => p.DepositAmount).HasColumnType("money");
+        modelBuilder.Entity<CustomerDetail>().Property(p => p.WithdrawalAmount).HasColumnType("money");
+        modelBuilder.Entity<CustomerDetail>().HasQueryFilter(filter => !filter.IsDeleted);
+        modelBuilder.Entity<CustomerDetail>()
+            .Property(p => p.Type)
+            .HasConversion(
+                type => type.Value,
+                value => CustomerDetailTypeEnum.FromValue(value));
+        #endregion
     }
 
 
