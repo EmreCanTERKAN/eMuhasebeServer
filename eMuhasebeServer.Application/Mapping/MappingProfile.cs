@@ -3,6 +3,7 @@ using eMuhasebeServer.Application.Features.Banks;
 using eMuhasebeServer.Application.Features.CashRegisters;
 using eMuhasebeServer.Application.Features.Companies;
 using eMuhasebeServer.Application.Features.Customers;
+using eMuhasebeServer.Application.Features.Invoices;
 using eMuhasebeServer.Application.Features.Products;
 using eMuhasebeServer.Application.Features.Users;
 using eMuhasebeServer.Domain.Entities;
@@ -51,5 +52,24 @@ public sealed class MappingProfile : Profile
 
         CreateMap<CreateProductCommand, Product>();
         CreateMap<UpdateProductCommand, Product>();
+
+        CreateMap<CreateInvoiceCommand, Invoice>()
+            .ForMember(member => member.Type, options =>
+            {
+                options.MapFrom(map => InvoiceTypeEnum.FromValue(map.TypeValue));
+            })
+            .ForMember(member => member.Details, options =>
+            {
+                options.MapFrom(map => map.InvoiceDetails.Select(s => new InvoiceDetail()
+                {
+                    ProductId = s.ProductId,
+                    Quantity = s.Quantity,
+                    Price = s.Price
+                }).ToList());
+            })
+            .ForMember(member => member.Amount, options =>
+            {
+                options.MapFrom(map => map.InvoiceDetails.Sum(s => s.Quantity * s.Price));
+            });
     }
 }
