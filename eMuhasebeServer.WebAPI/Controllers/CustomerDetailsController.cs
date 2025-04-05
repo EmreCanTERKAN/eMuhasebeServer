@@ -19,3 +19,18 @@ public class CustomerDetailsController : ApiController
     }
 
 }
+
+public class ProductDetailsController : ApiController
+{
+    public ProductDetailsController(IMediator mediator) : base(mediator)
+    {
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> GetAll(GetAllProductDetailQuery request, CancellationToken cancellationToken)
+    {
+        var response = await _mediator.Send(request, cancellationToken);
+        return StatusCode(response.StatusCode, response);
+    }
+
+}
