@@ -8,7 +8,7 @@ using System.Security.Claims;
 namespace eMuhasebeServer.Infrastructure.Context;
 internal sealed class CompanyDbContext : DbContext, IUnitOfWorkCompany
 {
-    #region Connecttion
+    #region Connection
     private string connectionString = string.Empty;
 
     public CompanyDbContext(Company company)

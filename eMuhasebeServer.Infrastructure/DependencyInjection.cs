@@ -26,7 +26,7 @@ public static class DependencyInjection
 
         services.AddScoped<ICacheService, MemoryCacheService>();
         //services.AddScoped<ICacheService, RedisCacheService>();
-
+       
         services.AddScoped<CompanyDbContext>();
 
         services.AddDbContext<ApplicationDbContext>(options =>

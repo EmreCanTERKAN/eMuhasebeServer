@@ -33,6 +33,7 @@ internal sealed class CreateInvoiceCommandHandler(
 
         await invoiceRepository.AddAsync(invoice, cancellationToken);
         #endregion
+
         #region Customer
         Customer? customer = await customerRepository.GetByExpressionWithTrackingAsync(p => p.Id == request.CustomerId, cancellationToken);
 
@@ -52,11 +53,14 @@ internal sealed class CreateInvoiceCommandHandler(
             DepositAmount = request.TypeValue == 2 ? invoice.Amount : 0,
             WithdrawalAmount = request.TypeValue == 1 ? invoice.Amount : 0,
             Description = invoice.InvoiceNumber + " Numaralı " + invoice.Type.Name,
-            Type = request.TypeValue == 1 ? CustomerDetailTypeEnum.PurchaseInvoiece : CustomerDetailTypeEnum.SellingInvoice
+            Type = request.TypeValue == 1 ? CustomerDetailTypeEnum.PurchaseInvoiece : CustomerDetailTypeEnum.SellingInvoice,
+            InvoiceDetailId = invoice.Id
+            
         };
 
         await customerDetailRepository.AddAsync(customerDetail, cancellationToken);
         #endregion
+
         #region Product
         foreach (var item in request.InvoiceDetails)
         {
@@ -71,13 +75,15 @@ internal sealed class CreateInvoiceCommandHandler(
                 Date = request.Date,
                 Description = invoice.InvoiceNumber + " Numaralı " + invoice.Type.Name,
                 Deposit = request.TypeValue == 1 ? item.Quantity : 0,
-                Withdrawal = request.TypeValue == 2 ? item.Quantity : 0
+                Withdrawal = request.TypeValue == 2 ? item.Quantity : 0,
+                InvoiceId = invoice.Id
             };
 
             await productRepository.AddAsync(product, cancellationToken);
             await productDetailRepository.AddAsync(productDetail, cancellationToken);
         }       
         #endregion
+
         await unitOfWorkCompany.SaveChangesAsync(cancellationToken);
 
         cacheService.Remove("purchaseInvoices");
