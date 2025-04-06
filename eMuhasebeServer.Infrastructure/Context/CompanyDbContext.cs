@@ -165,7 +165,7 @@ internal sealed class CompanyDbContext : DbContext, IUnitOfWorkCompany
         #region InvoiceDetail
         modelBuilder.Entity<InvoiceDetail>().Property(p => p.Price).HasColumnType("money");
         modelBuilder.Entity<InvoiceDetail>().Property(p => p.Quantity).HasColumnType("decimal(7,2)");
-        modelBuilder.Entity<InvoiceDetail>().HasQueryFilter(p => p.IsDeleted == false);
+        modelBuilder.Entity<InvoiceDetail>().HasQueryFilter(p => p.Product!.IsDeleted == false);
         #endregion
     }
 

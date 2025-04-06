@@ -13,7 +13,7 @@ public sealed record CreateInvoiceCommand(
     DateOnly Date,
     string InvoiceNumber,
     Guid CustomerId,
-    List<InvoiceDetailDto> InvoiceDetails) :IRequest<Result<string>>;
+    List<InvoiceDetailDto> Details) :IRequest<Result<string>>;
 
 internal sealed class CreateInvoiceCommandHandler(
     IInvoiceRepository invoiceRepository,
@@ -27,8 +27,7 @@ internal sealed class CreateInvoiceCommandHandler(
 {
     public async Task<Result<string>> Handle(CreateInvoiceCommand request, CancellationToken cancellationToken)
     {
-        #region Fature ve Detay
-
+        #region Fatura ve detay
         Invoice invoice = mapper.Map<Invoice>(request);
 
         await invoiceRepository.AddAsync(invoice, cancellationToken);
@@ -37,14 +36,13 @@ internal sealed class CreateInvoiceCommandHandler(
         #region Customer
         Customer? customer = await customerRepository.GetByExpressionWithTrackingAsync(p => p.Id == request.CustomerId, cancellationToken);
 
-        if(customer is null)
+        if (customer is null)
         {
             return Result<string>.Failure("Müşteri bulunamadı");
         }
 
         customer.DepositAmount += request.TypeValue == 2 ? invoice.Amount : 0;
         customer.WithdrawalAmount += request.TypeValue == 1 ? invoice.Amount : 0;
-
 
         CustomerDetail customerDetail = new()
         {
@@ -54,20 +52,21 @@ internal sealed class CreateInvoiceCommandHandler(
             WithdrawalAmount = request.TypeValue == 1 ? invoice.Amount : 0,
             Description = invoice.InvoiceNumber + " Numaralı " + invoice.Type.Name,
             Type = request.TypeValue == 1 ? CustomerDetailTypeEnum.PurchaseInvoiece : CustomerDetailTypeEnum.SellingInvoice,
-            InvoiceDetailId = invoice.Id
-            
+            InvoiceId = invoice.Id
         };
 
         await customerDetailRepository.AddAsync(customerDetail, cancellationToken);
         #endregion
 
-        #region Product
-        foreach (var item in request.InvoiceDetails)
+        #region Product        
+        foreach (var item in request.Details)
         {
-            Product product = await productRepository.GetByExpressionWithTrackingAsync(p => p.Id == item.ProductId, cancellationToken);
+            Product product = await productRepository.GetByExpressionAsync(p => p.Id == item.ProductId, cancellationToken);
 
             product.Deposit += request.TypeValue == 1 ? item.Quantity : 0;
             product.Withdrawal += request.TypeValue == 2 ? item.Quantity : 0;
+
+            productRepository.Update(product);
 
             ProductDetail productDetail = new()
             {
@@ -79,19 +78,16 @@ internal sealed class CreateInvoiceCommandHandler(
                 InvoiceId = invoice.Id
             };
 
-            await productRepository.AddAsync(product, cancellationToken);
             await productDetailRepository.AddAsync(productDetail, cancellationToken);
-        }       
+        }
         #endregion
 
         await unitOfWorkCompany.SaveChangesAsync(cancellationToken);
 
-        cacheService.Remove("purchaseInvoices");
-        cacheService.Remove("sellingInvoices");
+        cacheService.Remove("invoices");
         cacheService.Remove("customers");
         cacheService.Remove("products");
 
-        return invoice.Type.Name + "Fatura kaydı başarıyla tamamlandı";
-
+        return invoice.Type.Name + " kaydı başarıyla tamamlandı";
     }
 }
