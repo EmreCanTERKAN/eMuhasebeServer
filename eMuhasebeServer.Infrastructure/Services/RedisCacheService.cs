@@ -1,4 +1,5 @@
 ﻿using eMuhasebeServer.Application.Services;
+using Microsoft.Extensions.Caching.Memory;
 using StackExchange.Redis;
 using System.Text.Json;
 
@@ -31,5 +32,22 @@ internal sealed class RedisCacheService : ICacheService
     {
         var serializedValue = JsonSerializer.Serialize(value);
         _database.StringSet(key,serializedValue,expiry);
+    }
+
+    public void RemoveAll()
+    {
+        List<string> keys = new()
+        {
+            "cashRegisters",
+            "banks",
+            "invoices",
+            "products",
+            "customers"
+        };
+
+        foreach (var key in keys)
+        {
+            _database.KeyDelete(key);
+        }
     }
 }

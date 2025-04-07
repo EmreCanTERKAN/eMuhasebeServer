@@ -25,4 +25,23 @@ internal sealed class MemoryCacheService(
         };
         memoryCache.Set<T>(key, value, cacheEntryOptions);
     }
+
+    public void RemoveAll()
+    {
+        List<string> keys = new()
+        {
+            "cashRegisters",
+            "banks",
+            "invoices",
+            "products",
+            "customers"
+        };
+
+        foreach (var key in keys)
+        {
+            memoryCache.Remove(key);
+        }
+    }
+
+
 }
