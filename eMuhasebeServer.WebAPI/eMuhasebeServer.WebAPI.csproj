@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="9.0.0" />
+    <PackageReference Include="Bogus" Version="35.6.2" />
     <PackageReference Include="DefaultCorsPolicy" Version="8.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.OData" Version="9.2.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.3">
