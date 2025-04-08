@@ -18,4 +18,12 @@ public sealed class ReportsController : ApiController
 
         return StatusCode(response.StatusCode, response);
     }
+
+    [HttpGet]
+    public async Task<IActionResult> PurchaseReports(CancellationToken cancellationToken)
+    {
+        var response = await _mediator.Send(new PurchaseReportsQuery(), cancellationToken);
+
+        return StatusCode(response.StatusCode, response);
+    }
 }
