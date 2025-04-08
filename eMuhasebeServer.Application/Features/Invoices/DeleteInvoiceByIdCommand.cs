@@ -16,6 +16,7 @@ internal sealed class DeleteInvoiceByIdCommandHandler(
     IProductRepository productRepository,
     IProductDetailRepository productDetailRepository,
     IUnitOfWorkCompany unitOfWorkCompany,
+    IUnitOfWorkForClearTracking unitOfWorkForClearTracking,
     ICacheService cacheService) : IRequestHandler<DeleteInvoiceByIdCommand, Result<string>>
 {
     public async Task<Result<string>> Handle(DeleteInvoiceByIdCommand request, CancellationToken cancellationToken)
@@ -49,7 +50,7 @@ internal sealed class DeleteInvoiceByIdCommandHandler(
 
         foreach (var detail in productDetails)
         {
-            Product? product = await productRepository.GetByExpressionWithTrackingAsync(p => p.Id == detail.ProductId, cancellationToken);
+            Product? product = await productRepository.GetByExpressionAsync(p => p.Id == detail.ProductId, cancellationToken);
 
             if (product is not null)
             {
@@ -65,6 +66,7 @@ internal sealed class DeleteInvoiceByIdCommandHandler(
 
 
         await unitOfWorkCompany.SaveChangesAsync(cancellationToken);
+        unitOfWorkForClearTracking.ClearTracking();
 
         cacheService.Remove("invoices");
         cacheService.Remove("customers");
