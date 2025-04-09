@@ -55,3 +55,6 @@ Kullanıcı kayıt işlemi sonrasında, yapılandırılmış bir SMTP sunucusu �
 -   Katmanlar arası bağımlılık en aza indirilmiş, servis ve veri erişim yapıları soyutlanmıştır.
     
 -   Uygulama üzerinde geliştirmeye açık birçok modül ve alan bulunmaktadır.
+
+
+![Açıklama](https://github.com/EmreCanTERKAN/eMuhasebeServer/blob/master/docs/images/auth.png)
