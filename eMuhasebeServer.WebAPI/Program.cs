@@ -1,5 +1,6 @@
 using DefaultCorsPolicyNugetPackage;
 using eMuhasebeServer.Application;
+using eMuhasebeServer.Application.Hubs;
 using eMuhasebeServer.Infrastructure;
 using eMuhasebeServer.WebAPI.Middlewares;
 using HealthChecks.UI.Client;
@@ -103,5 +104,7 @@ app.MapHealthChecks("/health-check", new HealthCheckOptions
         [HealthStatus.Unhealthy] = StatusCodes.Status503ServiceUnavailable,
     }
 });
+
+app.MapHub<ReportHub>("/report-hub");
 
 app.Run();

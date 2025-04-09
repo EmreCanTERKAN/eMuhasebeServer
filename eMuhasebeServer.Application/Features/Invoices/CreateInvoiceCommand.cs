@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
+using eMuhasebeServer.Application.Hubs;
 using eMuhasebeServer.Application.Services;
 using eMuhasebeServer.Domain.Dtos;
 using eMuhasebeServer.Domain.Entities;
 using eMuhasebeServer.Domain.Enums;
 using eMuhasebeServer.Domain.Repositories;
 using MediatR;
+using Microsoft.AspNetCore.SignalR;
 using TS.Result;
 
 namespace eMuhasebeServer.Application.Features.Invoices;
@@ -13,7 +15,7 @@ public sealed record CreateInvoiceCommand(
     DateOnly Date,
     string InvoiceNumber,
     Guid CustomerId,
-    List<InvoiceDetailDto> Details) :IRequest<Result<string>>;
+    List<InvoiceDetailDto> Details) : IRequest<Result<string>>;
 
 internal sealed class CreateInvoiceCommandHandler(
     IInvoiceRepository invoiceRepository,
@@ -23,6 +25,7 @@ internal sealed class CreateInvoiceCommandHandler(
     ICustomerDetailRepository customerDetailRepository,
     IUnitOfWorkCompany unitOfWorkCompany,
     ICacheService cacheService,
+    IHubContext<ReportHub> hubContext,
     IMapper mapper) : IRequestHandler<CreateInvoiceCommand, Result<string>>
 {
     public async Task<Result<string>> Handle(CreateInvoiceCommand request, CancellationToken cancellationToken)
@@ -90,6 +93,10 @@ internal sealed class CreateInvoiceCommandHandler(
         cacheService.Remove("invoices");
         cacheService.Remove("customers");
         cacheService.Remove("products");
+
+
+        await hubContext.Clients.All.SendAsync("PurchaseReports", new { Date = invoice.Date, Amount = invoice.Amount });
+
 
         return invoice.Type.Name + " kaydı başarıyla tamamlandı";
     }

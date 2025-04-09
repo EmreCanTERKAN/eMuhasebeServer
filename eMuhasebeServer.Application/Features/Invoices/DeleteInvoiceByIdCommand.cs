@@ -1,7 +1,9 @@
-﻿using eMuhasebeServer.Application.Services;
+﻿using eMuhasebeServer.Application.Hubs;
+using eMuhasebeServer.Application.Services;
 using eMuhasebeServer.Domain.Entities;
 using eMuhasebeServer.Domain.Repositories;
 using MediatR;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using TS.Result;
 
@@ -17,6 +19,7 @@ internal sealed class DeleteInvoiceByIdCommandHandler(
     IProductDetailRepository productDetailRepository,
     IUnitOfWorkCompany unitOfWorkCompany,
     IUnitOfWorkForClearTracking unitOfWorkForClearTracking,
+    IHubContext<ReportHub> hubContext,
     ICacheService cacheService) : IRequestHandler<DeleteInvoiceByIdCommand, Result<string>>
 {
     public async Task<Result<string>> Handle(DeleteInvoiceByIdCommand request, CancellationToken cancellationToken)
@@ -71,6 +74,9 @@ internal sealed class DeleteInvoiceByIdCommandHandler(
         cacheService.Remove("invoices");
         cacheService.Remove("customers");
         cacheService.Remove("products");
+
+        await hubContext.Clients.All.SendAsync("PurchaseReports", new { Date = invoice.Date, Amount = invoice.Amount, Action = "delete" });
+
 
         return invoice.Type.Name + " kaydı başarıyla silindi";
     }
