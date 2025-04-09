@@ -1,55 +1,57 @@
-# Clean Architecture
+# Muhasebe Yönetim Sistemi
 
-Clean Architecture starter project for ASP.NET Core. [Clean Architecture](https://8thlight.com/blog/uncle-bob/2012/08/13/the-clean-architecture.html) is the latest in a series of architectures aiming towards a loosely-coupled, dependency-inverted architecture. You may also hear it referred to as [Hexagonal](http://alistair.cockburn.us/Hexagonal+architecture), [ports-and-adapters](http://www.dossier-andreas.net/software_architecture/ports_and_adapters.html), or [onion architecture](http://jeffreypalermo.com/blog/the-onion-architecture-part-1/).
+Bu proje, .NET 9.0 ile geliştirilmiş, çoklu şirket desteğine sahip, ölçeklenebilir bir şirket yönetim uygulamasıdır. Uygulama, Clean Architecture ve CQRS gibi modern yazılım mimarileri ile inşa edilmiştir. Her şirketin kendine ait bağımsız veritabanı bulunur ve sistem bu yapıya uygun olarak genişletilebilir şekilde tasarlanmıştır.
 
-## Table Of Contents
+## Genel Özellikler
 
-- [Clean Architecture](#clean-architecture)    
-  - [Give a start! :star:](#give-a-star-star)
-  - [Versions](#versions)
-  - [Getting Started](#getting-started)
-  - [Libraries Used in the Project](#libraries-used-in-the-project)
+-   Clean Architecture yapısı kullanılmıştır.
+    
+-   CQRS (Command & Query Responsibility Segregation) prensibine göre ayrılmış iş mantığı.
+    
+-   IdentityServer üzerinden kimlik doğrulama ve login işlemleri.
+    
+-   Her şirket için ayrı bir veritabanı (multi-tenancy desteği).
+    
+-   Şirketler, bankalar, müşteriler, ürünler, kasalar ve bunlara ait detayların yönetimi.
+    
+-   Her yapının kendi endpoint’i mevcuttur.
+    
+-   Stoklar üzerinden yapılan kârlılık analizleri ve detaylı raporlama.
+    
+-   Alış ve satış faturalarının yönetimi.
+    
+-   Satış faturaları, ana ekranda grafiksel rapor olarak gösterilir. Fatura eklenip silindiğinde veriler SignalR ile canlı olarak güncellenir.
+    
 
-## Give a start! :star:
-If you are using or like this project, you can support it by giving a star. Thank you!
+## Kullanılan Kütüphane ve Araçlar
 
-## Versions
-The project currently uses .NET version 8. There is no support for older versions.
+Projede aşağıdaki kütüphaneler ve desenler kullanılmıştır:
 
-# Getting Started
-This project has been published as a template via a NuGet package. After installing, it will appear in your project list in the "Create New Project" section of VS2022.
+-   **SignalR** – Gerçek zamanlı bildirimler için
+    
+-   **MediatR** – CQRS yapısının uygulanması için
+    
+-   **FluentValidation** – Model doğrulama işlemleri için
+    
+-   **AutoMapper** – Nesne dönüşümleri için
+    
+-   **Scrutor** – Servislerin otomatik olarak IOC container’a eklenmesi
+    
+-   **FluentEmail** – SMTP üzerinden e-posta gönderimi
+    
+-   **Result Pattern** – Katmanlar arası standart dönüş yapısı
+    
+-   **Unit of Work** & **Generic Repository Pattern** – Veritabanı işlemlerinin daha kontrollü ve sürdürülebilir hale getirilmesi için
+    
 
-To install, you can visit [NuGet (https://www.nuget.org/packages/TS.eMuhasebeServer)](https://www.nuget.org/packages/TS.eMuhasebeServer/)
+## E-Posta Gönderimi
 
-Or you can install it by running the following code block:
+Kullanıcı kayıt işlemi sonrasında, yapılandırılmış bir SMTP sunucusu üzerinden kullanıcıya otomatik olarak bilgilendirme e-postası gönderilir. Bu işlem FluentEmail paketiyle gerçekleştirilmiştir.
 
-```powershell
-dotnet new install TS.eMuhasebeServer
-```
+## Geliştirme Notları
 
-After the installation is complete, you can view the VS2022 project list with `dotnet new list` and search for the project template "ASP.NET Clean Architecture Solution" with the short name "ts.emuhasebeserver". If you find it in the list, you can now create a new project via VS2022 and find it by searching for "Clean Architecture" in the project search bar.
-
-![Proje Template](https://github.com/TanerSaydam/eMuhasebeServer.Template/blob/main/images/projeyibulma.png)
-
-After selecting the project, give it any name you want, for example `eCommerce`
-
-![Proje Structure](https://github.com/TanerSaydam/eMuhasebeServer.Template/blob/main/images/projestructure.png)
-
-## Libraries Used in the Project
-- **EntityFrameworkCore**
-- **EntityFrameworkCore.Identity**
-- **MediatR**
-- **AutoMapper**
-- **FluentValidation**
-- **TS.Result**
-- **TS.EntityFrameworkCore.GenericRepository**
-
-The project is initially configured with MSSQL. If you want to continue with MSSQL, adjust the ConnectionStrings section in the `appsetting.json` file according to your settings.
-
-![Connection String](https://github.com/TanerSaydam/eMuhasebeServer.Template/blob/main/images/connectionstring.png)
-
-If you want to change the database, you need to change the installed NuGet package in the Infrastructure layer and modify the connection information.
-
-The `Login` method and `User` class are present in the project. When the project runs, it automatically creates an admin user.
-
-![Create First User](https://github.com/TanerSaydam/eMuhasebeServer.Template/blob/main/images/createfirstuser.png)
+-   Kod yapısı test edilebilirlik ve genişletilebilirlik ön planda tutularak tasarlanmıştır.
+    
+-   Katmanlar arası bağımlılık en aza indirilmiş, servis ve veri erişim yapıları soyutlanmıştır.
+    
+-   Uygulama üzerinde geliştirmeye açık birçok modül ve alan bulunmaktadır.
