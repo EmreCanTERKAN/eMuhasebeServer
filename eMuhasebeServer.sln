@@ -3,20 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.13.35913.81
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "eMuhasebeServer.Application", "eMuhasebeServer.Application\eMuhasebeServer.Application.csproj", "{852C7B09-7A04-44DD-8E33-062114105766}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "eMuhasebeServer.Application", "src\eMuhasebeServer.Application\eMuhasebeServer.Application.csproj", "{852C7B09-7A04-44DD-8E33-062114105766}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "eMuhasebeServer.Domain", "eMuhasebeServer.Domain\eMuhasebeServer.Domain.csproj", "{385DF3AA-A306-48E2-A50E-360222EFB7E0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "eMuhasebeServer.Domain", "src\eMuhasebeServer.Domain\eMuhasebeServer.Domain.csproj", "{385DF3AA-A306-48E2-A50E-360222EFB7E0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "eMuhasebeServer.Infrastructure", "eMuhasebeServer.Infrastructure\eMuhasebeServer.Infrastructure.csproj", "{2BDEE79F-E054-4971-B199-D75FE4F0CAB5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "eMuhasebeServer.Infrastructure", "src\eMuhasebeServer.Infrastructure\eMuhasebeServer.Infrastructure.csproj", "{2BDEE79F-E054-4971-B199-D75FE4F0CAB5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "eMuhasebeServer.WebAPI", "eMuhasebeServer.WebAPI\eMuhasebeServer.WebAPI.csproj", "{13E4B116-A87A-4A56-AE67-718AE9CC78CB}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "images", "images", "{2E7C578B-E7B8-4D1D-A5A9-B9E73B8278B5}"
-	ProjectSection(SolutionItems) = preProject
-		..\..\..\OneDrive\Resimler\Ekran Görüntüleri\auth.png = ..\..\..\OneDrive\Resimler\Ekran Görüntüleri\auth.png
-	EndProjectSection
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "eMuhasebeServer.WebAPI", "src\eMuhasebeServer.WebAPI\eMuhasebeServer.WebAPI.csproj", "{13E4B116-A87A-4A56-AE67-718AE9CC78CB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
